@@ -1,7 +1,11 @@
 import json
+import re
 from urllib.error import URLError
 from urllib.parse import urlencode
 from urllib.request import urlopen
+
+API_URL = 'https://randomuser.me/api/?'
+API_PARAMETERS = {'results': 1, 'seed': 'abc'}
 
 
 class ApiDataDownloader:
@@ -28,6 +32,22 @@ class ApiDataDownloader:
 
 class ApiDataModifier:
     """Modify data received from API."""
+
+    class _Decorators:
+        """Decorators for ApiDataModifier class methods."""
+
+        @classmethod
+        def change_value(cls, func):
+            """Change the value of the selected key in the dict."""
+
+            def wrapper(self, dict_obj, key_path):
+                value = self.get_value(dict_obj, key_path)
+                new_value = func(self, value)
+                if new_value is None:
+                    return False
+                return self.set_value(dict_obj, key_path, new_value)
+
+            return wrapper
 
     def __init__(self, downloader, modifications, data_dict=None):
         self.__data = downloader.data
@@ -57,3 +77,32 @@ class ApiDataModifier:
                 return False
         temp[key_path[-1]] = value
         return True
+
+    @_Decorators.change_value
+    def remove_non_digit(self, value):
+        """Remove non digit characters from string."""
+        try:
+            new_value = re.sub(r'\D', '', value)
+        except TypeError:
+            return None
+        return new_value
+
+
+down = ApiDataDownloader(API_URL, API_PARAMETERS)
+
+down.send_request()
+
+print(down.data)
+
+mod = ApiDataModifier(down, None, 'results')
+
+print(mod.get_value(down.data['results'][0], ('name', 'first')))
+
+mod.set_value(down.data['results'][0], ('name', 'first'), "John")
+
+print(mod.get_value(down.data['results'][0], ('name', 'first')))
+
+x = mod.remove_non_digit(down.data['results'][0], ('das',))
+
+print(down.data)
+print(x)
