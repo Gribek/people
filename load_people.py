@@ -57,7 +57,7 @@ class ApiDataModifier:
 
     @staticmethod
     def get_value(dict_obj, key_path):
-        """Get the value from the dictionary."""
+        """Get the value of the selected key from the dictionary."""
         result = dict_obj
         for key in key_path:
             try:
@@ -68,7 +68,7 @@ class ApiDataModifier:
 
     @staticmethod
     def set_value(dict_obj, key_path, value):
-        """Set the value in the dictionary."""
+        """Set the value of the selected key in the dictionary."""
         temp = dict_obj
         for i in range(len(key_path) - 1):
             try:
@@ -86,23 +86,3 @@ class ApiDataModifier:
         except TypeError:
             return None
         return new_value
-
-
-down = ApiDataDownloader(API_URL, API_PARAMETERS)
-
-down.send_request()
-
-print(down.data)
-
-mod = ApiDataModifier(down, None, 'results')
-
-print(mod.get_value(down.data['results'][0], ('name', 'first')))
-
-mod.set_value(down.data['results'][0], ('name', 'first'), "John")
-
-print(mod.get_value(down.data['results'][0], ('name', 'first')))
-
-x = mod.remove_non_digit(down.data['results'][0], ('das',))
-
-print(down.data)
-print(x)
