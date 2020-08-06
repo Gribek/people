@@ -86,3 +86,10 @@ class Login(Model):
 
     class Meta:
         database = db
+
+
+# Initialize database and create tables based on models
+if __name__ == '__main__':
+    db.connect(reuse_if_open=True)
+    db.create_tables([Person, Contact, Location, Login])
+    db.close()
