@@ -4,6 +4,7 @@ from datetime import datetime, date, timedelta
 from urllib.error import URLError
 from urllib.parse import urlencode
 from urllib.request import urlopen
+from sys import exit
 
 from database_connection import sqlite_connection
 from models import Person, Contact, Login, Location
@@ -13,6 +14,43 @@ API_URL = 'https://randomuser.me/api/?'
 API_PARAMETERS = {'results': 1000, 'seed': 'abc'}
 
 db = sqlite_connection(DATABASE)
+
+
+def main():
+    """Download data from API, modify and save to the database"""
+
+    # create downloader to handle getting data from randomuser API
+    downloader = ApiDataDownloader(API_URL, API_PARAMETERS)
+
+    # Send request to API and collect data
+    downloader.send_request()
+
+    # Check for API response, exit if false
+    if not downloader.response:
+        exit(1)
+
+    # check for API data, exit if no data has been received
+    if downloader.data is None:
+        print('Failed to get data from API')
+        exit(1)
+
+    # set of modifications to perform on API data
+    modifications = (
+        {'name': 'remove_non_digit', 'key_path': ('phone',)},
+        {'name': 'remove_non_digit', 'key_path': ('cell',)},
+        {'name': 'days_to_birthday', 'key_path': ('dob', 'days_to_birthday',)},
+        {'name': 'delete_value', 'key_path': ('picture',)},
+    )
+
+    # create modifier object, pass modifications to perform
+    modifier = ApiDataModifier(downloader, modifications, 'results')
+
+    # modify data accordingly to configuration
+    modifier.execute_modifications()
+
+    # Save modified data to the database
+    save_obj = ApiDataSave(downloader, 'results')
+    save_obj.save_data_to_db()
 
 
 class ApiDataDownloader:
@@ -220,3 +258,7 @@ class ApiDataSave(ApiDataReader):
         """Gather data defined in dataset."""
         for key in dataset:
             dataset[key] = self.get_value(dict_obj, dataset[key])
+
+
+if __name__ == '__main__':
+    main()
