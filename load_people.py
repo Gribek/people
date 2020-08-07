@@ -30,30 +30,13 @@ class ApiDataDownloader:
                 self.data = json.loads(response.read())
 
 
-class ApiDataModifier:
-    """Modify data received from API."""
+class ApiDataReader:
+    """Read data received from API."""
 
-    class _Decorators:
-        """Decorators for ApiDataModifier class methods."""
-
-        @classmethod
-        def change_value(cls, func):
-            """Change the value of the selected key in the dict."""
-
-            def wrapper(self, dict_obj, key_path):
-                value = self.get_value(dict_obj, key_path)
-                new_value = func(self, value)
-                if new_value is None:
-                    return False
-                return self.set_value(dict_obj, key_path, new_value)
-
-            return wrapper
-
-    def __init__(self, downloader, modifications, data_dict=None):
+    def __init__(self, downloader, data_location=None):
         self.__data = downloader.data
-        if data_dict is not None:
-            self.__data = self.__data[data_dict]
-        self.__modifications = modifications
+        if data_location:
+            self.__data = self.__data[data_location]
 
     @staticmethod
     def get_value(dict_obj, key_path):
@@ -65,6 +48,30 @@ class ApiDataModifier:
             except KeyError:
                 return None
         return result
+
+
+class ApiDataModifier(ApiDataReader):
+    """Modify data received from API."""
+
+    class _Decorators:
+        """Decorators for ApiDataModifier class methods."""
+
+        @classmethod
+        def change_value(cls, func):
+            """Change selected the value in the dict using function."""
+
+            def wrapper(self, dict_obj, key_path):
+                value = self.get_value(dict_obj, key_path)
+                new_value = func(self, value)
+                if new_value is None:
+                    return False
+                return self.set_value(dict_obj, key_path, new_value)
+
+            return wrapper
+
+    def __init__(self, downloader, modifications, data_dict=None):
+        super(ApiDataModifier, self).__init__(downloader, data_dict)
+        self.__modifications = modifications
 
     @staticmethod
     def set_value(dict_obj, key_path, value):
