@@ -85,6 +85,21 @@ class ApiDataModifier(ApiDataReader):
         temp[key_path[-1]] = value
         return True
 
+    @staticmethod
+    def delete_value(dict_obj, key_path):
+        """Delete the value of the selected key from the dictionary."""
+        temp = dict_obj
+        for i in range(len(key_path) - 1):
+            try:
+                temp = temp[key_path[i]]
+            except KeyError:
+                return False
+        try:
+            del temp[key_path[-1]]
+        except KeyError:
+            return False
+        return True
+
     @_Decorators.change_value
     def remove_non_digit(self, value):
         """Remove non digit characters from string."""
