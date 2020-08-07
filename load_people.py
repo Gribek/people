@@ -5,8 +5,14 @@ from urllib.error import URLError
 from urllib.parse import urlencode
 from urllib.request import urlopen
 
+from database_connection import sqlite_connection
+from models import Person, Contact, Login, Location
+
+DATABASE = 'people.db'
 API_URL = 'https://randomuser.me/api/?'
 API_PARAMETERS = {'results': 1000, 'seed': 'abc'}
+
+db = sqlite_connection(DATABASE)
 
 
 class ApiDataDownloader:
@@ -141,3 +147,76 @@ class ApiDataModifier(ApiDataReader):
 
         days_left = birthday - today
         return days_left.days
+
+
+class ApiDataSave(ApiDataReader):
+    """Save API data to the database."""
+
+    def save_data_to_db(self):
+        """Save all persons' data to the database"""
+        for person_dict in self._data:
+            person = self.save_person(person_dict)
+            self.save_contact(person_dict, person)
+            self.save_location(person_dict, person)
+            self.save_login(person_dict, person)
+
+    def save_person(self, dict_obj):
+        """Save person to the database"""
+        dataset = {
+            'firstname': ('name', 'first'), 'lastname': ('name', 'last'),
+            'title': ('name', 'title'), 'gender': ('gender',),
+            'nationality': ('nat',), 'id_name': ('id', 'name'),
+            'id_value': ('id', 'value'), 'date_of_birth': ('dob', 'date'),
+            'age': ('dob', 'age'),
+            'days_to_birthday': ('dob', 'days_to_birthday')
+        }
+        self.collect_data(dataset, dict_obj)
+        with db:
+            person = Person.create(**dataset)
+        return person
+
+    def save_contact(self, dict_obj, person):
+        """Save contact data to the database"""
+        dataset = {'email': ('email',), 'phone': ('phone',), 'cell': ('cell',)}
+        self.collect_data(dataset, dict_obj)
+        dataset['person'] = person
+        with db:
+            Contact.create(**dataset)
+
+    def save_location(self, dict_obj, person):
+        """Save location data to the database"""
+        dataset = {
+            'number': ('location', 'street', 'number'),
+            'street': ('location', 'street', 'name'),
+            'city': ('location', 'city'), 'state': ('location', 'state'),
+            'country': ('location', 'country'),
+            'postcode': ('location', 'postcode'),
+            'timezone_offset': ('location', 'timezone', 'offset'),
+            'timezone_description': ('location', 'timezone', 'description'),
+            'coordinates_latitude': ('location', 'coordinates', 'latitude'),
+            'coordinates_longitude': ('location', 'coordinates', 'longitude')
+        }
+        self.collect_data(dataset, dict_obj)
+        dataset['person'] = person
+        with db:
+            Location.create(**dataset)
+
+    def save_login(self, dict_obj, person):
+        """Save login data to the database"""
+        dataset = {
+            'uuid': ('login', 'uuid'), 'username': ('login', 'username'),
+            'password': ('login', 'password'), 'salt': ('login', 'salt'),
+            'md5': ('login', 'md5'), 'sha1': ('login', 'sha1'),
+            'sha256': ('login', 'sha256'),
+            'registration_date': ('registered', 'date'),
+            'years_since_registration': ('registered', 'age')
+        }
+        self.collect_data(dataset, dict_obj)
+        dataset['person'] = person
+        with db:
+            Login.create(**dataset)
+
+    def collect_data(self, dataset, dict_obj):
+        """Gather data defined in dataset."""
+        for key in dataset:
+            dataset[key] = self.get_value(dict_obj, dataset[key])
