@@ -35,9 +35,9 @@ class ApiDataReader:
     """Read data received from API."""
 
     def __init__(self, downloader, data_location=None):
-        self.__data = downloader.data
+        self._data = downloader.data
         if data_location:
-            self.__data = self.__data[data_location]
+            self._data = self._data[data_location]
 
     @staticmethod
     def get_value(dict_obj, key_path):
@@ -97,6 +97,12 @@ class ApiDataModifier(ApiDataReader):
                 return False
         temp[key_path[-1]] = value
         return True
+
+    def execute_modifications(self):
+        for person_dict in self._data:
+            for modification in self.__modifications:
+                method = getattr(self, modification['name'])
+                method(person_dict, modification['key_path'])
 
     @staticmethod
     def delete_value(dict_obj, key_path):
