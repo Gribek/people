@@ -1,5 +1,6 @@
 import json
 import re
+from datetime import datetime, date
 from urllib.error import URLError
 from urllib.parse import urlencode
 from urllib.request import urlopen
@@ -69,6 +70,18 @@ class ApiDataModifier(ApiDataReader):
 
             return wrapper
 
+        @classmethod
+        def add_new_value(cls, func):
+            """Add new key-value pair to the dictionary"""
+
+            def wrapper(self, dict_obj, key_path):
+                value = func(self, dict_obj)
+                if value is None:
+                    return False
+                return self.set_value(dict_obj, key_path, value)
+
+            return wrapper
+
     def __init__(self, downloader, modifications, data_dict=None):
         super(ApiDataModifier, self).__init__(downloader, data_dict)
         self.__modifications = modifications
@@ -108,3 +121,21 @@ class ApiDataModifier(ApiDataReader):
         except TypeError:
             return None
         return new_value
+
+    @_Decorators.add_new_value
+    def days_to_birthday(self, dict_obj):
+        """Calculate days to next birthday."""
+        birthdate = self.get_value(dict_obj, key_path=('dob', 'date'))
+        birthday = datetime.strptime(birthdate, "%Y-%m-%dT%H:%M:%S.%fZ").date()
+        today = date.today()
+
+        if (today.month == birthday.month and today.day >= birthday.day) \
+                or today.month > birthday.month:
+            next_bd_year = today.year + 1
+        else:
+            next_bd_year = today.year
+
+        next_birthday = date(next_bd_year, birthday.month, birthday.day)
+        days_left = next_birthday - today
+
+        return days_left.days
