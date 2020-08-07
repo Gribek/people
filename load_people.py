@@ -59,7 +59,7 @@ class ApiDataModifier(ApiDataReader):
 
         @classmethod
         def change_value(cls, func):
-            """Change selected the value in the dict using function."""
+            """Replace selected value with function output."""
 
             def wrapper(self, dict_obj, key_path):
                 value = self.get_value(dict_obj, key_path)
