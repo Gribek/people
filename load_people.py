@@ -1,12 +1,12 @@
 import json
 import re
-from datetime import datetime, date
+from datetime import datetime, date, timedelta
 from urllib.error import URLError
 from urllib.parse import urlencode
 from urllib.request import urlopen
 
 API_URL = 'https://randomuser.me/api/?'
-API_PARAMETERS = {'results': 1, 'seed': 'abc'}
+API_PARAMETERS = {'results': 1000, 'seed': 'abc'}
 
 
 class ApiDataDownloader:
@@ -132,17 +132,12 @@ class ApiDataModifier(ApiDataReader):
     @_Decorators.add_new_value
     def days_to_birthday(self, dict_obj):
         """Calculate days to next birthday."""
+        today = date.today()
         birthdate = self.get_value(dict_obj, key_path=('dob', 'date'))
         birthday = datetime.strptime(birthdate, "%Y-%m-%dT%H:%M:%S.%fZ").date()
-        today = date.today()
+        birthday = birthday.replace(year=today.year)
+        if birthday < today:
+            birthday += timedelta(days=356)
 
-        if (today.month == birthday.month and today.day >= birthday.day) \
-                or today.month > birthday.month:
-            next_bd_year = today.year + 1
-        else:
-            next_bd_year = today.year
-
-        next_birthday = date(next_bd_year, birthday.month, birthday.day)
-        days_left = next_birthday - today
-
+        days_left = birthday - today
         return days_left.days
