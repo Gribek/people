@@ -99,6 +99,7 @@ class ApiDataModifier(ApiDataReader):
         return True
 
     def execute_modifications(self):
+        """Perform all data modifications."""
         for person_dict in self._data:
             for modification in self.__modifications:
                 method = getattr(self, modification['name'])
