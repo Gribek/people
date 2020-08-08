@@ -19,7 +19,7 @@ def man_women_percentage(obj):
     female = decimal.Decimal(obj.count_entries('Person', 'gender', 'female'))
     male_percentage = male / (male + female) * 100
     female_percentage = female / (male + female) * 100
-    print(f'{male_percentage}%', f'{female_percentage}%')
+    print(f'male: {male_percentage}%', f'female: {female_percentage}%')
 
 
 if __name__ == '__main__':
