@@ -40,6 +40,13 @@ class DatabaseFunctions:
             return cls.select(attr, fn.COUNT(attr).alias('count')).group_by(
                 attr).order_by(SQL('count').desc()).limit(limit)
 
+    def data_in_range(self, table, column, lower, upper):
+        """Find data within given range."""
+        cls = getattr(import_module(self.__models), table)
+        attr = getattr(cls, column)
+        with self.__db:
+            return cls.select().where(attr.between(lower, upper))
+
 
 def db_functions(func):
     """Pass DatabaseFunction object to decorated function."""
