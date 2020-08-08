@@ -66,3 +66,18 @@ def db_functions(func):
         func(obj, **kwargs)
 
     return wrapper
+
+
+def password_score(password):
+    score = 0
+    if bool(re.search(r'[a-z]', password)):
+        score += 1
+    if bool(re.search(r'[A-Z]', password)):
+        score += 2
+    if bool(re.search(r'\d', password)):
+        score += 1
+    if len(password) >= 8:
+        score += 5
+    if any(c in r"!\"#$%&'()*+,-./:;<=>?@[\]^_`{|}~" for c in list(password)):
+        score += 3
+    return score
