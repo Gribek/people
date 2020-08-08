@@ -1,4 +1,5 @@
 import decimal
+from importlib import import_module
 
 import click
 
@@ -35,6 +36,26 @@ def average_age(obj, gender):
         kwargs['cond_value'] = gender
     avg_value = obj.average_value(**kwargs)[0].avg
     print(f'Average age: {avg_value}')
+
+
+@cli.command('most-common')
+@click.argument('category')
+@click.option('--limit', default=1, help='Number of results')
+@db_functions
+def most_common(obj, limit, category):
+    models = ['Person', 'Login', 'Location', 'Contact']
+    for model in models:
+        cls = getattr(import_module('models'), model)
+        attr = getattr(cls, category, None)
+        if attr is not None:
+            break
+    else:
+        print(f'There is no information about {category}')
+        return None
+
+    results = obj.most_occurrences(cls, attr, limit)
+    for result in results:
+        print(getattr(result, category), result.count)
 
 
 if __name__ == '__main__':
