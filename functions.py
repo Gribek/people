@@ -1,4 +1,5 @@
 from importlib import import_module
+import re
 
 from peewee import fn, SQL
 
@@ -46,6 +47,14 @@ class DatabaseFunctions:
         attr = getattr(cls, column)
         with self.__db:
             return cls.select().where(attr.between(lower, upper))
+
+    def get_data(self, table, *columns):
+        """Get data from selected table."""
+        cls = getattr(import_module(self.__models), table)
+        attr = []
+        for column in columns:
+            attr.append(getattr(cls, column))
+        return cls.select(*attr)
 
 
 def db_functions(func):
