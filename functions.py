@@ -1,5 +1,7 @@
 from importlib import import_module
 
+from peewee import fn
+
 from database_connection import sqlite_connection
 
 
@@ -19,6 +21,18 @@ class DatabaseFunctions:
                 return cls.select().where(attr == condition).count()
             else:
                 return cls.select().count()
+
+    def average_value(self, table, column, condition=None, cond_value=None):
+        """Calculate the average value of the selected column."""
+        cls = getattr(import_module(self.__models), table)
+        attr = getattr(cls, column)
+        with self.__db:
+            if condition:
+                cond_attr = getattr(cls, condition)
+                return cls.select(fn.AVG(attr).alias('avg')).where(
+                    cond_attr == cond_value)
+            else:
+                return cls.select(fn.AVG(attr).alias('avg'))
 
 
 def db_functions(func):
