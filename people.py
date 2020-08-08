@@ -58,5 +58,16 @@ def most_common(obj, limit, category):
         print(getattr(result, category), result.count)
 
 
+@cli.command('born-between')
+@click.argument('lower')
+@click.argument('upper')
+@db_functions
+def born_between(obj, lower, upper):
+    """Find all people born between two dates."""
+    result = obj.data_in_range('Person', 'date_of_birth', lower, upper)
+    for p in result:
+        print(p.title, p.firstname, p.lastname, p.date_of_birth)
+
+
 if __name__ == '__main__':
     cli()
