@@ -1,6 +1,6 @@
 from importlib import import_module
 
-from peewee import fn
+from peewee import fn, SQL
 
 from database_connection import sqlite_connection
 
@@ -33,6 +33,12 @@ class DatabaseFunctions:
                     cond_attr == cond_value)
             else:
                 return cls.select(fn.AVG(attr).alias('avg'))
+
+    def most_occurrences(self, cls, attr, limit):
+        """Find the most frequent values in the selected column."""
+        with self.__db:
+            return cls.select(attr, fn.COUNT(attr).alias('count')).group_by(
+                attr).order_by(SQL('count').desc()).limit(limit)
 
 
 def db_functions(func):
