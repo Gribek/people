@@ -41,7 +41,7 @@ class DatabaseFunctions:
                 attr).order_by(SQL('count').desc()).limit(limit)
 
     def data_in_range(self, table, column, lower, upper):
-        """Find data within given range."""
+        """Collect data within the given range."""
         cls = getattr(import_module(self.__models), table)
         attr = getattr(cls, column)
         with self.__db:
