@@ -12,13 +12,13 @@ class DatabaseFunctions:
         self.__db = db_connection(db_name)
         self.__models = models
 
-    def count_entries(self, table, column=None, condition=None):
-        """Count number of entries in selected table"""
+    def count_entries(self, table, condition=None, cond_value=None):
+        """Count number of entries in the selected table."""
         cls = getattr(import_module(self.__models), table)
         with self.__db:
             if condition:
-                attr = getattr(cls, column)
-                return cls.select().where(attr == condition).count()
+                attr = getattr(cls, condition)
+                return cls.select().where(attr == cond_value).count()
             else:
                 return cls.select().count()
 
