@@ -22,5 +22,20 @@ def man_women_percentage(obj):
     print(f'male: {male_percentage}%', f'female: {female_percentage}%')
 
 
+@cli.command('average-age')
+@click.option('--gender',
+              type=click.Choice(['male', 'female'], case_sensitive=False),
+              default=None, help='Specify gender')
+@db_functions
+def average_age(obj, gender):
+    """Calculate the average age of people."""
+    kwargs = {'table': 'Person', 'column': 'age'}
+    if gender is not None:
+        kwargs['condition'] = 'gender'
+        kwargs['cond_value'] = gender
+    avg_value = obj.average_value(**kwargs)[0].avg
+    print(f'Average age: {avg_value}')
+
+
 if __name__ == '__main__':
     cli()
