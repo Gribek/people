@@ -3,7 +3,7 @@ from importlib import import_module
 
 import click
 
-from functions import db_functions
+from functions import db_functions, password_score
 
 
 @click.group()
@@ -67,6 +67,15 @@ def born_between(obj, lower, upper):
     result = obj.data_in_range('Person', 'date_of_birth', lower, upper)
     for p in result:
         print(p.title, p.firstname, p.lastname, p.date_of_birth)
+
+
+@cli.command('password-security')
+@db_functions
+def password_security(obj):
+    """Find the most secure password."""
+    result = obj.get_data('Login', 'password')
+    password = max((i.password for i in result), key=password_score)
+    print(password)
 
 
 if __name__ == '__main__':
