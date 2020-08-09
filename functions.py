@@ -67,6 +67,27 @@ class DatabaseFunctions:
         return cls.select(*attr)
 
 
+class Result:
+    """Display the result in the terminal."""
+
+    def __init__(self, result, prefix=None, suffix=None):
+        self.__result = result
+        self.__prefix = prefix
+        self.__suffix = suffix
+
+    def display_multiple(self):
+        """Print multiple results."""
+        for line in self.__result:
+            print(*line)
+
+    def display_single(self):
+        """Format and print the result."""
+        for i in range(len(self.__result)):
+            result_string = ' '.join(str(j[i]) for j in (
+                self.__prefix, self.__result, self.__suffix) if j)
+            print(result_string)
+
+
 def db_functions(func):
     """Pass DatabaseFunction object to decorated function."""
 
