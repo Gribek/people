@@ -17,8 +17,9 @@ def man_women_percentage(obj):
     decimal.getcontext().prec = 4
     male = decimal.Decimal(obj.count_entries('Person', 'gender', 'male'))
     female = decimal.Decimal(obj.count_entries('Person', 'gender', 'female'))
-    female_perc = female / (male + female) * 100
-    male_perc = male / (male + female) * 100
+    people = decimal.Decimal(obj.count_entries('Person'))
+    female_perc = female / people * 100
+    male_perc = male / people * 100
     r = Result((female_perc, male_perc), ('Female', 'Male'), ('%', '%'))
     r.display_single()
 
