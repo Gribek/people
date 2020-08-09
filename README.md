@@ -30,6 +30,7 @@ The settings.py file contain the configuration for the following:
 * database name
 * randomuser API url
 * parameters used when a request is made to the randomuser API
+* configuration of data modification to be performed
 
 To rename the database file, change the value of the DATABASE variable, by default set to 'people.db':
 ```
