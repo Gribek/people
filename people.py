@@ -43,6 +43,7 @@ def average_age(obj, gender):
 @click.option('--limit', default=1, help='Number of results')
 @db_functions
 def most_common(obj, limit, category):
+    """Find the most common entries in the selected category."""
     results = obj.most_occurrences(category, limit)
     if results is None:
         print(f'There is no information about {category}')
