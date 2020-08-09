@@ -7,7 +7,7 @@ from functions import password_score
 from load_people import ApiDataDownloader, ApiDataReader, ApiDataModifier, \
     ApiDataSave
 from models import Person, Login, Location, Contact
-from settings import API_URL
+from settings import API_URL, DATA_MODIFICATIONS
 
 MODELS = [Person, Login, Location, Contact]
 API_PERSONS = 2
@@ -32,12 +32,7 @@ def reader_obj(downloader_obj):
 @pytest.fixture
 def modifier_obj(downloader_obj):
     downloader_obj.send_request()
-    modifications = (
-        {'name': 'remove_non_digit', 'key_path': ('phone',)},
-        {'name': 'remove_non_digit', 'key_path': ('cell',)},
-        {'name': 'days_to_birthday', 'key_path': ('dob', 'days_to_birthday',)},
-        {'name': 'delete_value', 'key_path': ('picture',)},
-    )
+    modifications = DATA_MODIFICATIONS
     modifier = ApiDataModifier(
         downloader_obj, modifications, data_dict='results')
     return modifier
