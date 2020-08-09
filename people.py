@@ -2,7 +2,7 @@ import decimal
 
 import click
 
-from functions import db_functions, password_score
+from functions import db_functions, password_score, Result
 
 
 @click.group()
@@ -17,9 +17,10 @@ def man_women_percentage(obj):
     decimal.getcontext().prec = 4
     male = decimal.Decimal(obj.count_entries('Person', 'gender', 'male'))
     female = decimal.Decimal(obj.count_entries('Person', 'gender', 'female'))
-    male_percentage = male / (male + female) * 100
-    female_percentage = female / (male + female) * 100
-    print(f'male: {male_percentage}%', f'female: {female_percentage}%')
+    female_perc = female / (male + female) * 100
+    male_perc = male / (male + female) * 100
+    r = Result((female_perc, male_perc), ('Female', 'Male'), ('%', '%'))
+    r.display_single()
 
 
 @cli.command('average-age')
@@ -30,11 +31,15 @@ def man_women_percentage(obj):
 def average_age(obj, gender):
     """Calculate the average age of people."""
     kwargs = {'table': 'Person', 'column': 'age'}
+    description = ''
     if gender is not None:
         kwargs['condition'] = 'gender'
         kwargs['cond_value'] = gender
+        description += f'{gender} '
     avg_value = obj.average_value(**kwargs)[0].avg
-    print(f'Average age: {avg_value}')
+    description += 'average age:'
+    r = Result((avg_value,), (description.capitalize(),))
+    r.display_single()
 
 
 @cli.command('most-common')
@@ -43,12 +48,12 @@ def average_age(obj, gender):
 @db_functions
 def most_common(obj, limit, category):
     """Find the most common entries in the selected category."""
-    results = obj.most_occurrences(category, limit)
-    if results is None:
+    result = obj.most_occurrences(category, limit)
+    if result is None:
         print(f'There is no information about {category}')
         return None
-    for result in results:
-        print(getattr(result, category), result.count)
+    r = Result(((getattr(row, category), row.count) for row in result))
+    r.display_multiple()
 
 
 @cli.command('born-between')
@@ -58,8 +63,10 @@ def most_common(obj, limit, category):
 def born_between(obj, lower, upper):
     """Find all people born between two dates."""
     result = obj.data_in_range('Person', 'date_of_birth', lower, upper)
-    for p in result:
-        print(p.title, p.firstname, p.lastname, p.date_of_birth)
+    result_sorted = sorted(result, key=lambda x: x.date_of_birth)
+    r = Result(((p.title, p.firstname, p.lastname, p.date_of_birth)
+                for p in result_sorted))
+    r.display_multiple()
 
 
 @cli.command('password-security')
@@ -68,7 +75,8 @@ def password_security(obj):
     """Find the most secure password."""
     result = obj.get_data('Login', 'password')
     password = max((i.password for i in result), key=password_score)
-    print(password)
+    r = Result((password,), ('The most secure password:',))
+    r.display_single()
 
 
 if __name__ == '__main__':
