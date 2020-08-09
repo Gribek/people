@@ -1,3 +1,4 @@
+from datetime import datetime
 import decimal
 
 import click
@@ -65,8 +66,10 @@ def born_between(obj, lower, upper):
     """Find all people born between two dates."""
     result = obj.data_in_range('Person', 'date_of_birth', lower, upper)
     result_sorted = sorted(result, key=lambda x: x.date_of_birth)
-    r = Result(((p.title, p.firstname, p.lastname, p.date_of_birth)
-                for p in result_sorted))
+    r = Result(
+        ((p.title, p.firstname, p.lastname,
+          datetime.strptime(p.date_of_birth, "%Y-%m-%dT%H:%M:%S.%fZ").date())
+         for p in result_sorted))
     r.display_multiple()
 
 
