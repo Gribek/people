@@ -43,17 +43,10 @@ def average_age(obj, gender):
 @click.option('--limit', default=1, help='Number of results')
 @db_functions
 def most_common(obj, limit, category):
-    models = ['Person', 'Login', 'Location', 'Contact']
-    for model in models:
-        cls = getattr(import_module('models'), model)
-        attr = getattr(cls, category, None)
-        if attr is not None:
-            break
-    else:
+    results = obj.most_occurrences(category, limit)
+    if results is None:
         print(f'There is no information about {category}')
         return None
-
-    results = obj.most_occurrences(cls, attr, limit)
     for result in results:
         print(getattr(result, category), result.count)
 

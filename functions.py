@@ -35,9 +35,19 @@ class DatabaseFunctions:
             else:
                 return cls.select(fn.AVG(attr).alias('avg'))
 
-    def most_occurrences(self, cls, attr, limit):
+    def most_occurrences(self, column, limit):
         """Find the most frequent values in the selected column."""
         with self.__db:
+            cursor = self.__db.execute_sql(
+                'SELECT name FROM sqlite_master WHERE type="table"')
+            for row in cursor.fetchall():
+                cls = getattr(import_module('models'), row[0].title())
+                attr = getattr(cls, column, None)
+                if attr is not None:
+                    break
+            else:
+                return None
+
             return cls.select(attr, fn.COUNT(attr).alias('count')).group_by(
                 attr).order_by(SQL('count').desc()).limit(limit)
 
