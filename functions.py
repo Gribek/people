@@ -100,6 +100,7 @@ def db_functions(func):
 
 
 def password_score(password):
+    """Calculate the score for password security."""
     score = 0
     if bool(re.search(r'[a-z]', password)):
         score += 1
@@ -112,3 +113,4 @@ def password_score(password):
     if any(c in r"!\"#$%&'()*+,-./:;<=>?@[\]^_`{|}~" for c in list(password)):
         score += 3
     return score
+
