@@ -8,7 +8,7 @@ from urllib.request import urlopen
 
 from database_connection import sqlite_connection
 from models import Person, Contact, Login, Location
-from settings import DATABASE, API_URL, API_PARAMETERS
+from settings import DATABASE, API_URL, API_PARAMETERS, DATA_MODIFICATIONS
 
 db = sqlite_connection(DATABASE)
 
@@ -32,12 +32,7 @@ def main():
         exit(1)
 
     # set of modifications to perform on API data
-    modifications = (
-        {'name': 'remove_non_digit', 'key_path': ('phone',)},
-        {'name': 'remove_non_digit', 'key_path': ('cell',)},
-        {'name': 'days_to_birthday', 'key_path': ('dob', 'days_to_birthday',)},
-        {'name': 'delete_value', 'key_path': ('picture',)},
-    )
+    modifications = DATA_MODIFICATIONS
 
     # create modifier object, pass modifications to perform
     modifier = ApiDataModifier(downloader, modifications, 'results')
