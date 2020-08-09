@@ -1,4 +1,3 @@
-import datetime
 import re
 
 import pytest
@@ -10,7 +9,7 @@ from settings import API_URL
 
 @pytest.fixture
 def downloader_obj():
-    api_param = {'results': 1, 'seed': 'abc', }
+    api_param = {'results': 2, 'seed': 'abc', }
     downloader = ApiDataDownloader(API_URL, api_param)
     return downloader
 
@@ -139,6 +138,19 @@ class TestApiDataModifier:
         modifier_obj.days_to_birthday(dict_obj, ('days_to_birthday',))
         error_key = 'days_to_birthday key not set'
         assert 'days_to_birthday' in dict_obj, error_key
+
+    def test_execute_modifications(self, modifier_obj):
+        dict_obj = modifier_obj._data[1]
+        modifier_obj.execute_modifications()
+
+        error_new_key = 'days_to_birthday key not set'
+        error_delete = 'picture key not deleted'
+        error_change = 'Value not changed'
+
+        assert 'days_to_birthday' in dict_obj['dob'], error_new_key
+        assert 'picture' not in dict_obj, error_delete
+        assert bool(re.search(r'\D', dict_obj['phone'])) is False, error_change
+        assert bool(re.search(r'\D', dict_obj['cell'])) is False, error_change
 
 
 def test_password_score():
