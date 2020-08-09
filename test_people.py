@@ -1,15 +1,23 @@
 import re
 
+from peewee import SqliteDatabase
 import pytest
 
 from functions import password_score
-from load_people import ApiDataDownloader, ApiDataReader, ApiDataModifier
+from load_people import ApiDataDownloader, ApiDataReader, ApiDataModifier, \
+    ApiDataSave
+from models import Person, Login, Location, Contact
 from settings import API_URL
+
+MODELS = [Person, Login, Location, Contact]
+API_PERSONS = 2
+
+db = SqliteDatabase(':memory:')
 
 
 @pytest.fixture
 def downloader_obj():
-    api_param = {'results': 2, 'seed': 'abc', }
+    api_param = {'results': API_PERSONS, 'seed': 'abc', }
     downloader = ApiDataDownloader(API_URL, api_param)
     return downloader
 
@@ -151,6 +159,119 @@ class TestApiDataModifier:
         assert 'picture' not in dict_obj, error_delete
         assert bool(re.search(r'\D', dict_obj['phone'])) is False, error_change
         assert bool(re.search(r'\D', dict_obj['cell'])) is False, error_change
+
+
+class TestApiDataSave:
+
+    @classmethod
+    def setup_class(cls):
+        db.bind(MODELS, bind_refs=False, bind_backrefs=False)
+        db.connect()
+        db.create_tables(MODELS)
+
+    @classmethod
+    def teardown_class(cls):
+        db.drop_tables(MODELS)
+        db.close()
+
+    def test_save_person(self, downloader_obj, modifier_obj):
+        modifier_obj.execute_modifications()
+        dict_obj = modifier_obj._data[0]
+        save_obj = ApiDataSave(downloader_obj, 'results')
+        save_obj.save_person(dict_obj)
+        assert len(
+            Person.select()) == 1, 'The Person object has not been saved'
+        person = Person.select()[0]
+        error = 'Invalid data has been written'
+        assert person.title == dict_obj['name']['title'], error
+        assert person.firstname == dict_obj['name']['first'], error
+        assert person.lastname == dict_obj['name']['last'], error
+        assert person.gender == dict_obj['gender'], error
+        assert person.nationality == dict_obj['nat'], error
+        assert person.id_name == dict_obj['id']['name'], error
+        assert person.id_value == dict_obj['id']['value'], error
+        assert person.date_of_birth == dict_obj['dob']['date'], error
+        assert person.age == dict_obj['dob']['age'], error
+        assert person.days_to_birthday == dict_obj['dob'][
+            'days_to_birthday'], error
+
+    def test_save_login(self, downloader_obj, modifier_obj):
+        modifier_obj.execute_modifications()
+        dict_obj = modifier_obj._data[0]
+        save_obj = ApiDataSave(downloader_obj, 'results')
+        p = save_obj.save_person(dict_obj)
+        save_obj.save_login(dict_obj, p)
+        assert len(Login.select()) == 1, 'The Login object has not been saved'
+        login = Login.select()[0]
+        error = 'Invalid data has been written'
+        assert login.uuid == dict_obj['login']['uuid'], error
+        assert login.username == dict_obj['login']['username'], error
+        assert login.password == dict_obj['login']['password'], error
+        assert login.salt == dict_obj['login']['salt'], error
+        assert login.md5 == dict_obj['login']['md5'], error
+        assert login.sha1 == dict_obj['login']['sha1'], error
+        assert login.sha256 == dict_obj['login']['sha256'], error
+        assert login.registration_date == dict_obj['registered']['date'], error
+        assert login.years_since_registration == dict_obj[
+            'registered']['age'], error
+        assert login.person == p, error
+
+    def test_save_location(self, downloader_obj, modifier_obj):
+        modifier_obj.execute_modifications()
+        dict_obj = modifier_obj._data[0]
+        save_obj = ApiDataSave(downloader_obj, 'results')
+        p = save_obj.save_person(dict_obj)
+        save_obj.save_location(dict_obj, p)
+        assert len(
+            Location.select()) == 1, 'The Location object has not been saved'
+        location = Location.select()[0]
+        error = 'Invalid data has been written'
+        assert location.number == dict_obj[
+            'location']['street']['number'], error
+        assert location.street == dict_obj['location']['street']['name'], error
+        assert location.city == dict_obj['location']['city'], error
+        assert location.state == dict_obj['location']['state'], error
+        assert location.country == dict_obj['location']['country'], error
+        assert location.postcode == str(
+            dict_obj['location']['postcode']), error
+        assert location.timezone_offset == dict_obj[
+            'location']['timezone']['offset'], error
+        assert location.timezone_description == dict_obj[
+            'location']['timezone']['description'], error
+        assert str(location.coordinates_latitude) == dict_obj[
+            'location']['coordinates']['latitude'], error
+        assert str(location.coordinates_longitude) == dict_obj[
+            'location']['coordinates']['longitude'], error
+        assert location.person == p, error
+
+    def test_save_contact(self, downloader_obj, modifier_obj):
+        modifier_obj.execute_modifications()
+        dict_obj = modifier_obj._data[0]
+        save_obj = ApiDataSave(downloader_obj, 'results')
+        p = save_obj.save_person(dict_obj)
+        save_obj.save_contact(dict_obj, p)
+        assert len(
+            Contact.select()) == 1, 'The Contact object has not been saved'
+        contact = Contact.select()[0]
+        error = 'Invalid data has been written'
+        assert contact.email == dict_obj['email'], error
+        assert contact.phone == dict_obj['phone'], error
+        assert contact.cell == dict_obj['cell'], error
+        assert contact.person == p, error
+
+    def test_save_data_to_db(self, downloader_obj, modifier_obj):
+        persons = len(Person.select())
+        contacts = len(Contact.select())
+        logins = len(Login.select())
+        localizations = len(Location.select())
+        modifier_obj.execute_modifications()
+        save_obj = ApiDataSave(downloader_obj, 'results')
+        save_obj.save_data_to_db()
+        error = 'Incorrect number of objects saved in the database'
+        assert len(Person.select()) == persons + API_PERSONS, error
+        assert len(Contact.select()) == contacts + API_PERSONS, error
+        assert len(Login.select()) == logins + API_PERSONS, error
+        assert len(Location.select()) == localizations + API_PERSONS, error
 
 
 def test_password_score():
