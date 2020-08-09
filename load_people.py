@@ -1,17 +1,14 @@
+from datetime import datetime, date, timedelta
 import json
 import re
-from datetime import datetime, date, timedelta
+from sys import exit
 from urllib.error import URLError
 from urllib.parse import urlencode
 from urllib.request import urlopen
-from sys import exit
 
 from database_connection import sqlite_connection
 from models import Person, Contact, Login, Location
-
-DATABASE = 'people.db'
-API_URL = 'https://randomuser.me/api/?'
-API_PARAMETERS = {'results': 1000, 'seed': 'abc'}
+from settings import DATABASE, API_URL, API_PARAMETERS
 
 db = sqlite_connection(DATABASE)
 

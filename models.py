@@ -1,8 +1,7 @@
 from peewee import *
 
 from database_connection import sqlite_connection
-
-DATABASE = 'people.db'
+from settings import DATABASE
 
 db = sqlite_connection(DATABASE)
 
