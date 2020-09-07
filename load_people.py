@@ -123,9 +123,9 @@ class ApiDataModifier(ApiDataReader):
     def set_value(dict_obj, key_path, value):
         """Set the value of the selected key in the dictionary."""
         temp = dict_obj
-        for i in range(len(key_path) - 1):
+        for key in key_path[:-1]:
             try:
-                temp = temp[key_path[i]]
+                temp = temp[key]
             except KeyError:
                 return False
         temp[key_path[-1]] = value
@@ -142,12 +142,9 @@ class ApiDataModifier(ApiDataReader):
     def delete_value(dict_obj, key_path):
         """Delete the value of the selected key from the dictionary."""
         temp = dict_obj
-        for i in range(len(key_path) - 1):
-            try:
-                temp = temp[key_path[i]]
-            except KeyError:
-                return False
         try:
+            for key in key_path[:-1]:
+                temp = temp[key]
             del temp[key_path[-1]]
         except KeyError:
             return False
