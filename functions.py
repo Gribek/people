@@ -38,10 +38,9 @@ class DatabaseFunctions:
     def most_occurrences(self, column, limit):
         """Find the most frequent values in the selected column."""
         with self.__db:
-            cursor = self.__db.execute_sql(
-                'SELECT name FROM sqlite_master WHERE type="table"')
-            for row in cursor.fetchall():
-                cls = getattr(import_module('models'), row[0].title())
+            tables = self.__db.get_tables()
+            for table in tables:
+                cls = getattr(import_module('models'), table.title())
                 attr = getattr(cls, column, None)
                 if attr is not None:
                     break
