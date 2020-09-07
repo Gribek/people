@@ -1,9 +1,21 @@
 # People
 ### Table of contents
+* [General info](#general-info)
+* [Technologies](#technologies)
 * [Setup](#setup)
 * [Settings](#settings)
 * [Available commands](#available-commands)
-* [Technologies](#technologies)
+
+### General info
+The purpose of this project is to create a user database and then be able to obtain statistical information about the users
+ via the command line interface. The program uses the randomuser API (https://randomuser.me/) as a source of data.
+
+### Technologies
+* Python 3.7.5
+* SQLite 3.22.0
+* peewee 3.13.3
+* click 7.1.2
+* pytest 5.2.2
 
 ### Setup
 Download the repository and prepare a new virtual environment. Then install all dependencies using the command:
@@ -11,8 +23,8 @@ Download the repository and prepare a new virtual environment. Then install all 
 $ pip install -r requirements.txt
 ```
 
-The attached database file already contains all the data required for this assignment. 
-To start with an empty database and test all scripts, you can delete the people.db file or rename the database file in the settings (check [Settings](#settings)).
+The attached database file already contains some test data. 
+To start with an empty database, you can delete the people.db file or rename the database file in the settings (check [Settings](#settings)).
 Then run the following scripts:
 ```
 python models.py
@@ -27,20 +39,25 @@ This concludes the project setup, you can also skip the step of creating a new d
 ### Settings
 
 The settings.py file contain the configuration for the following:
-* database name
+* database filename
 * randomuser API url
 * parameters used when a request is made to the randomuser API
 * configuration of data modification to be performed
 
+##### Database filename
 To rename the database file, change the value of the DATABASE variable, by default set to 'people.db':
 ```
 DATABASE = 'people.db'
 ```
+
+##### API request parameters
+
 The variables sent in the request to the randomuser API can be found in the API_PARAMETERS dictionary.
-They are now set so that the received data matches the contents of the persons.json file received with the assignment:
+By default, parameters are set so that the data received in the response contains information about 1000 users:
 ```
 API_PARAMETERS = {'results': 1000, 'seed': 'abc'}
 ```
+You can find more information about randomuser API request parameters in its documentation https://randomuser.me/documentation.
 
 ### Available commands
 
@@ -57,7 +74,7 @@ All commands are called from the people.py script.
 
 **2. _average-age_ - display the average age of people**
 
- Command pattern: people.py gender-percentage [OPTIONS]
+ Command pattern: people.py average-age [OPTIONS]
  
  Options:  
  --gender [male|female] - specifies gender
@@ -105,9 +122,3 @@ where:
  python people.py password-security
  ```
  
-### Technologies
-* Python 3.7.5
-* SQLite 3.22.0
-* peewee 3.13.3
-* click 7.1.2
-* pytest 5.2.2
