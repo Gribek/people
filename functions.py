@@ -109,7 +109,7 @@ def password_score(password):
         score += 1
     if len(password) >= 8:
         score += 5
-    if any(c in r"!\"#$%&'()*+,-./:;<=>?@[\]^_`{|}~" for c in list(password)):
+    if any(c in r"!\"#$%&'()*+,-./:;<=>?@[\]^_`{|}~" for c in password):
         score += 3
     return score
 
