@@ -12,7 +12,7 @@ The purpose of this project is to create a user database and then be able to obt
  It also allows for the modification of initial data before storing them in the database.
 
 ### Technologies
-* Python 3.7.5
+* Python 3.8.5
 * SQLite 3.22.0
 * peewee 3.13.3
 * click 7.1.2
