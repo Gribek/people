@@ -8,7 +8,8 @@
 
 ### General info
 The purpose of this project is to create a user database and then be able to obtain statistical information about the users
- via the command line interface. The program uses the randomuser API (https://randomuser.me/) as a source of data.
+ via the command line interface. The program uses the randomuser API (https://randomuser.me/) as a source of data. 
+ It also allows for the modification of initial data before storing them in the database.
 
 ### Technologies
 * Python 3.7.5
