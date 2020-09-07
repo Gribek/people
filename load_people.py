@@ -31,11 +31,8 @@ def main():
         print('Failed to get data from API')
         exit(1)
 
-    # set of modifications to perform on API data
-    modifications = DATA_MODIFICATIONS
-
     # create modifier object, pass modifications to perform
-    modifier = ApiDataModifier(downloader, modifications, 'results')
+    modifier = ApiDataModifier(downloader, DATA_MODIFICATIONS, 'results')
 
     # modify data accordingly to configuration
     modifier.execute_modifications()
