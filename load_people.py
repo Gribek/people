@@ -1,7 +1,7 @@
 from datetime import datetime, date, timedelta
 import json
 import re
-from sys import exit
+import sys
 from urllib.error import URLError
 from urllib.parse import urlencode
 from urllib.request import urlopen
@@ -24,12 +24,11 @@ def main():
 
     # Check for API response, exit if false
     if not downloader.response:
-        exit(1)
+        sys.exit('No response from API received')
 
     # check for API data, exit if no data has been received
     if downloader.data is None:
-        print('Failed to get data from API')
-        exit(1)
+        sys.exit('Failed to get data from API')
 
     # create modifier object, pass modifications to perform
     modifier = ApiDataModifier(downloader, DATA_MODIFICATIONS, 'results')
@@ -247,4 +246,4 @@ class ApiDataSave(ApiDataReader):
 
 
 if __name__ == '__main__':
-    main()
+    sys.exit(main())
