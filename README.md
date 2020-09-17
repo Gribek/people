@@ -7,9 +7,9 @@
 * [Available commands](#available-commands)
 
 ### General info
-The purpose of this project is to create a user database and then be able to obtain statistical information about the users
- via the command line interface. The program uses the randomuser API (https://randomuser.me/) as a source of data. 
- It also allows for the modification of initial data before storing them in the database.
+The goal of this project was to prepare scripts that create a user database and then be able to obtain statistical 
+information about the users via the command line interface. The program uses the randomuser API (https://randomuser.me/) 
+as a source of data. It also performs some arbitrary modifications of initial data before storing them in the database.
 
 ### Technologies
 * Python 3.8.5
@@ -59,6 +59,10 @@ By default, parameters are set so that the data received in the response contain
 API_PARAMETERS = {'results': 1000, 'seed': 'abc'}
 ```
 You can find more information about randomuser API request parameters in its documentation https://randomuser.me/documentation.
+
+##### Modifications
+All modifications are configured in the DATA_MODIFICATIONS variable. 
+Each of them is a single dictionary selecting the value to modify and the method to run.
 
 ### Available commands
 
