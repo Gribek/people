@@ -19,37 +19,43 @@ as a source of data. It also performs some arbitrary modifications of initial da
 * pytest 5.2.2
 
 ### Setup
-##### 1A. Basic setup (with Docker)
+##### Using Docker
 Download the repository and then run the following command:
 ```
 docker-compose run --rm app
 ```
-Alternatively, if you wish to manually attach to/detach from the container:
+It will automatically attach you to the container and provide the pseudo terminal, where you can try the commands described [below](#available-commands).  
+
+This is a default setup, which uses current settings and the attached database file with some test data.
+If you want to start with an empty database, follow the instructions in [Database setup](#Database-setup).
+Remember that if you make changes to the settings.py file (e.g. renaming the database), you need to rebuild the docker image before running ```docker-compose run``` again:
 ```
-docker-compose up -d
+docker-compose build
 ```
 
-##### 1B. Basic setup (without Docker)
+##### Using virtual environment
 Download the repository and prepare a new virtual environment. Then install all dependencies using the command:
 ```
 $ pip install -r requirements.txt
 ```
-##### 2. Database setup
-The attached database file already contains some test data. 
-To start with an empty database, you can delete the people.db file (from db subdirectory) or rename the database file in the settings (check [Settings](#settings)).
-Then run the following scripts:
+Now you can try the commands described [below](#available-commands).  
+
+This is a default setup, which uses current settings and the attached database file with some test data.
+If you want to start with an empty database, follow the instructions in [Database setup](#Database-setup)
+
+##### Database setup
+To start with an empty database, you can delete the people.db file (from db subdirectory) or rename the database file in the settings (check [Settings](#settings)).  
+
+Run the following scripts (from a virtual environment or a docker container):
 ```
 python models.py
 
 python load_people.py
 ```
 The first one will create a new database file and migrate all models.
-The second one will download data from randomuser API, make modifications, and save them to the database.
-
-This concludes the project setup, you can also skip the step of creating a new database and proceed to use the commands described [below](#available-commands) right after installing the requirements.
+The latter will download data from randomuser API, make modifications, and save them to the database.
 
 ### Settings
-
 The settings.py file contain the configuration for the following:
 * database filename
 * randomuser API url
