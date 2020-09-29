@@ -19,11 +19,22 @@ as a source of data. It also performs some arbitrary modifications of initial da
 * pytest 5.2.2
 
 ### Setup
+##### 1A. Basic setup (with Docker)
+Download the repository and then run the following command:
+```
+docker-compose run --rm app
+```
+Alternatively, if you wish to manually attach to/detach from the container:
+```
+docker-compose up -d
+```
+
+##### 1B. Basic setup (without Docker)
 Download the repository and prepare a new virtual environment. Then install all dependencies using the command:
 ```
 $ pip install -r requirements.txt
 ```
-
+##### 2. Database setup
 The attached database file already contains some test data. 
 To start with an empty database, you can delete the people.db file or rename the database file in the settings (check [Settings](#settings)).
 Then run the following scripts:
