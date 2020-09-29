@@ -28,7 +28,7 @@ It will automatically attach you to the container and provide the pseudo termina
 
 This is a default setup, which uses current settings and the attached database file with some test data.
 If you want to start with an empty database, follow the instructions in [Database setup](#Database-setup).
-Remember that if you make changes to the settings.py file (e.g. renaming the database), you need to rebuild the docker image before running ```docker-compose run``` again:
+Remember that if you make changes to the settings.py file, you need to rebuild the docker image before running ```docker-compose run``` again:
 ```
 docker-compose build
 ```
@@ -46,7 +46,7 @@ If you want to start with an empty database, follow the instructions in [Databas
 ##### Database setup
 To start with an empty database, you can delete the people.db file (from db subdirectory) or rename the database file in the settings (check [Settings](#settings)).  
 
-Run the following scripts (from a virtual environment or a docker container):
+After that run the following scripts from your virtual environment or docker container (rebuild Docker image first in case of renaming database file):
 ```
 python models.py
 
