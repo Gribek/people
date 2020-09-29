@@ -1,6 +1,6 @@
 from peewee import *
 
-from database_connection import sqlite_connection
+from db.database_connection import sqlite_connection
 from settings import DATABASE
 
 db = sqlite_connection(DATABASE)

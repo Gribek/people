@@ -6,7 +6,7 @@ from urllib.error import URLError
 from urllib.parse import urlencode
 from urllib.request import urlopen
 
-from database_connection import sqlite_connection
+from db.database_connection import sqlite_connection
 from models import Person, Contact, Login, Location
 from settings import DATABASE, API_URL, API_PARAMETERS, DATA_MODIFICATIONS
 

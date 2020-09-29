@@ -3,7 +3,7 @@ import re
 
 from peewee import fn, SQL
 
-from database_connection import sqlite_connection
+from db.database_connection import sqlite_connection
 
 
 class DatabaseFunctions:
@@ -112,4 +112,3 @@ def password_score(password):
     if any(c in r"!\"#$%&'()*+,-./:;<=>?@[\]^_`{|}~" for c in password):
         score += 3
     return score
-
