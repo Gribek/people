@@ -4,6 +4,6 @@ services:
     build: .
     image: people
     volumes:
-      - ./db:/home/app/db
+      - ./db:/home/app_user/db
     stdin_open: true
     tty: true
