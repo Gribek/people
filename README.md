@@ -36,7 +36,7 @@ $ pip install -r requirements.txt
 ```
 ##### 2. Database setup
 The attached database file already contains some test data. 
-To start with an empty database, you can delete the people.db file or rename the database file in the settings (check [Settings](#settings)).
+To start with an empty database, you can delete the people.db file (from db subdirectory) or rename the database file in the settings (check [Settings](#settings)).
 Then run the following scripts:
 ```
 python models.py
