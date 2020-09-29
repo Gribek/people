@@ -3,7 +3,7 @@ import re
 
 from peewee import fn, SQL
 
-from db.database_connection import sqlite_connection
+from database_connection import sqlite_connection
 from settings import DATABASE
 
 
