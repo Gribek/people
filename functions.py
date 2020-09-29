@@ -4,6 +4,7 @@ import re
 from peewee import fn, SQL
 
 from db.database_connection import sqlite_connection
+from settings import DATABASE
 
 
 class DatabaseFunctions:
@@ -91,7 +92,7 @@ def db_functions(func):
     """Pass DatabaseFunction object to decorated function."""
 
     def wrapper(**kwargs):
-        obj = DatabaseFunctions(db_name='people.db',
+        obj = DatabaseFunctions(db_name=DATABASE,
                                 db_connection=sqlite_connection)
         func(obj, **kwargs)
 
